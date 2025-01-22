@@ -207,7 +207,7 @@ pub(all) type CongestionAwareRouter
 
 ///|
 pub impl Router for CongestionAwareRouter with route(info : RouteInfo) -> RouteResult {
-  // enhance_cost_grid(info.cost_grid, 3 * info.via_penalty)
+  enhance_cost_grid(info.cost_grid, 3 * info.via_penalty)
   let result = RouteResult(Map::new())
   fn compare_length(id1 : Int, id2 : Int) -> Int {
     let net1 = info.netlist[id1].unwrap()
