@@ -155,8 +155,7 @@ fn find_path(info : RouteInfo, net : Net) -> Array[Point] {
       }
       // cost for crossing two layers
       let via_cost = if [L_NEG, L_POS].contains(next_direction) {
-        // info.via_penalty
-        0
+        info.via_penalty
       } else {
         0
       }

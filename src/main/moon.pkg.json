@@ -1,6 +1,7 @@
 {
   "is-main": true,
   "import": [
-    "zhuguiyuan/router/lib"
+    "zhuguiyuan/router/lib",
+    "moonbitlang/x/sys"
   ]
 }
