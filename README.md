@@ -1,7 +1,7 @@
 # zhuguiyuan/router
 
 This project is an simple congestion-aware EDA router.
-It is modified from a project of ShanghaiTech VLSI Design Automation course.
+It is modified from a project of EE215A VLSI Design Automation @ ShanghaiTech.
 
 ## File format
 
@@ -63,3 +63,28 @@ This is also a simple text file, with the following format:
 Note that you indicate a net that you could not route
 by just have a single line after the NetID with a 0.
 
+## Design
+
+- Basic routing algorithm: I use A* algorithm as the basic routing algorithm.
+- Via and bend penalty: They are considered by adding to the A* weight.
+- Net routing order: While nets are typically provided in a predetermined order,
+  selecting an optimal sequence for routing them can significantly enhance both
+  the success rate and the overall routing quality. Here we simply use sort the
+  nets by their l1 distance between start and end points.
+- Blockage penalty: One of the critical challenges in the routing process is the
+  potential for previously routed nets to block the paths of nets that are
+  routed later. As each net is routed, it occupies a certain portion of the
+  routing resource. Here we introduce a blockage penalty, as show below.
+  The blockage penalty is the influence of every blocked grid on its neighbors.
+- Direction Preference: I also implement a preferred one-way routing.
+  I add a penalty for wire going horizontally in the first layer and those going
+  vertically in the second layer. The penalty we apply is the same as the
+  via penalty, which encourage router to change layer when changing direction.
+
+```
+The example of blockage penalty:
+   O    O
+O -1 X -1 O
+   O    O
+Congestion point X will get more penalty from blocked neighbers(-1) than other O points.
+```
