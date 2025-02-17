@@ -1,4 +1,4 @@
-# zhuguiyuan/router
+# zhuguiyuan/eda-router
 
 This project is an simple congestion-aware EDA router.
 It is modified from a project of EE215A VLSI Design Automation @ ShanghaiTech.

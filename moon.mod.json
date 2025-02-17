@@ -1,8 +1,8 @@
 {
   "name": "zhuguiyuan/eda-router",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "deps": {
-    "moonbitlang/x": "0.4.18"
+    "moonbitlang/x": "0.4.19"
   },
   "readme": "README.md",
   "repository": "https://github.com/zhuguiyuan/MoonBit-EDA-Router",

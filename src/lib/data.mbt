@@ -31,7 +31,7 @@ pub fn Point::l1_distance(self : Point, other : Point) -> Int {
 pub(all) struct Net {
   start : Point
   target : Point
-} derive(Show)
+}
 
 ///|
 pub(all) struct Grid[T] {
@@ -49,6 +49,7 @@ fn Grid::make[T](row_size : Int, col_size : Int, val : T) -> Grid[T] {
   { row_size, col_size, space }
 }
 
+///|
 test "CostGrid:::make" {
   inspect!(
     Grid::make(1, 3, 4),
@@ -82,7 +83,7 @@ pub(all) struct RouteInfo {
   bend_penalty : Int
   via_penalty : Int
   cost_grid : CostGrid
-} derive(Show)
+}
 
 ///|
 /// Route result maps each net to its path
@@ -95,7 +96,7 @@ pub fn RouteInfo::from_file(
   grid_file : String,
   netlist_file : String
 ) -> RouteInfo {
-  let grid_file_content = @fs.read_file_to_string?(path=grid_file).unwrap()
+  let grid_file_content = @fs.read_file_to_string?(grid_file).unwrap()
   let grid_input = Input::from_string(grid_file_content)
   let col_size = grid_input.next_int().unwrap()
   let row_size = grid_input.next_int().unwrap()
@@ -109,7 +110,7 @@ pub fn RouteInfo::from_file(
       }
     }
   }
-  let netlist_file_content = @fs.read_file_to_string?(path=netlist_file).unwrap()
+  let netlist_file_content = @fs.read_file_to_string?(netlist_file).unwrap()
   let netlist_input = Input::from_string(netlist_file_content)
   let net_nums = netlist_input.next_int().unwrap()
   let netlist = Map::new()
@@ -139,6 +140,7 @@ pub fn RouteInfo::from_file(
   }
 }
 
+///|
 test "RouteInfo::from_file" {
   ignore(RouteInfo::from_file("bench/bench2.grid", "bench/bench2.nl"))
 }
@@ -153,13 +155,14 @@ pub fn RouteResult::to_string(self : RouteResult) -> String {
       if i != 0 && path[i - 1].layer != path[i].layer {
         sb.write_string("3 \{path[i-1].x_idx} \{path[i-1].y_idx}\n")
       }
-      sb.write_string("\{path[i]}\n")
+      sb.write_string("\{path[i].to_string()}\n")
     }
     sb.write_string("0\n")
   }
   sb.to_string()
 }
 
+///|
 test "grid_to_string" {
   let result : RouteResult = Map::from_array([
     (1, [Point::new(0, 4, 2), Point::new(0, 4, 3), Point::new(1, 4, 3)]),
@@ -174,6 +177,7 @@ test "grid_to_string" {
       #|1 4 3
       #|3 4 3
       #|2 4 3
+      #|0
       #|2
       #|2 7 2
       #|3 7 2
@@ -188,7 +192,10 @@ test "grid_to_string" {
 
 ///|
 pub fn RouteResult::to_file(self : RouteResult, route_file : String) -> Unit {
-  @fs.write_string_to_file(path=route_file, content=self.to_string())
+  match @fs.write_string_to_file?(route_file, self.to_string()) {
+    Err(_) => panic()
+    Ok(_) => ()
+  }
 }
 
 ///|
