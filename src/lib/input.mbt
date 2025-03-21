@@ -93,6 +93,7 @@ pub fn Input::next_int(self : Input) -> Int? {
   }
 }
 
+///|
 test "input_ints" {
   let input = Input::from_string("  12  3 21 \n 21 3  ")
   inspect!(input.next_int(), content="Some(12)")
@@ -104,6 +105,7 @@ test "input_ints" {
   inspect!(input.next_int(), content="None")
 }
 
+///|
 test "input_neg" {
   let input = Input::from_string(" -12  +3 -21 --21 3 ")
   inspect!(input.next_int(), content="Some(-12)")
@@ -115,6 +117,7 @@ test "input_neg" {
   inspect!(input.next_int(), content="None")
 }
 
+///|
 test "input_error" {
   let input = Input::from_string("1 6asjdk 0")
   inspect!(input.next_int(), content="Some(1)")
@@ -145,6 +148,7 @@ fn str_to_int(s : String) -> Int {
   num * sign
 }
 
+///|
 test "str_to_int" {
   inspect!(str_to_int("0"), content="0")
   inspect!(str_to_int("14"), content="14")

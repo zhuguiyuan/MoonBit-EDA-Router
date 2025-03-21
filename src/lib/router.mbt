@@ -6,7 +6,7 @@ pub trait Router {
 
 ///|
 /// Directions to use in the router
-enum Direction {
+priv enum Direction {
   X_POS
   X_NEG
   Y_POS
@@ -62,6 +62,7 @@ fn extract_path(direction_grid : DirectionGrid, net : Net) -> Array[Point] {
   return rev_result.rev()
 }
 
+///|
 test "extract_path" {
   let directions = DirectionGrid::make(2, 2, X_POS)
   let net = { start: Point::new(0, 0, 0), target: Point::new(0, 1, 0) }
@@ -106,7 +107,7 @@ fn copy_cost_grid(self : CostGrid) -> CostGrid {
 }
 
 ///|
-type Wavefront (Double, Point) derive(Show, Eq)
+priv type Wavefront (Double, Point) derive(Show, Eq)
 
 ///|
 impl Compare for Wavefront with compare(self, other) -> Int {
