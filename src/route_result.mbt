@@ -4,7 +4,7 @@ pub fn RouteResult::to_string(self : RouteResult) -> String {
   sb.write_string("\{self._.size()}\n")
   for id, path in @sorted_map.from_iter(self._.iter()) {
     sb.write_string("\{id}\n")
-    for i in (0).until(path.length()) {
+    for i in 0..<path.length() {
       if i != 0 && path[i - 1].layer != path[i].layer {
         sb.write_string("3 \{path[i-1].x_idx} \{path[i-1].y_idx}\n")
       }

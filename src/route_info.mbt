@@ -21,10 +21,10 @@ pub fn RouteInfo::from_file(
     col_size * row_size * 2 == others.length()
   let cost_grid = CostGrid::make(row_size, col_size, 0)
   let mut idx = 0
-  for k in 0..<2 {
-    for i in 0..<col_size {
-      for j in 0..<row_size {
-        cost_grid[Point::new(k, i, j)] = others[idx]
+  for l in 0..<2 {
+    for y in 0..<row_size {
+      for x in 0..<col_size {
+        cost_grid[Point::new(l, x, y)] = others[idx]
         idx += 1
       }
     }

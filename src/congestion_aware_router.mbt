@@ -114,10 +114,10 @@ fn can_route(point : Point, working_grid : CostGrid) -> Bool {
 /// Deep copy a cost grid
 fn copy_cost_grid(self : CostGrid) -> CostGrid {
   let other = CostGrid::make(self.row_size, self.col_size, 0)
-  for k = 0; k < 2; k = k + 1 {
-    for i = 0; i < self.col_size; i = i + 1 {
-      for j = 0; j < self.row_size; j = j + 1 {
-        let pos = Point::new(k, i, j)
+  for l in 0..<2 {
+    for x in 0..<self.col_size {
+      for y in 0..<self.row_size {
+        let pos = Point::new(l, x, y)
         other[pos] = self[pos]
       }
     }
@@ -148,8 +148,7 @@ fn find_path(info : RouteInfo, net : Net) -> Array[Point] {
   working_grid[start] = -1
   working_grid[target] = 1
   let wavefronts = @priority_queue.of([Wavefront((1.0, start))])
-  while not(wavefronts.is_empty()) {
-    let Wavefront((curr_cost, curr_point)) = wavefronts.pop().unwrap()
+  while wavefronts.pop() is Some(Wavefront((curr_cost, curr_point))) {
     if curr_point == target {
       return extract_path(direction_grid, net)
     }
@@ -161,7 +160,7 @@ fn find_path(info : RouteInfo, net : Net) -> Array[Point] {
       // cost for BFS algorithm
       let basic_cost = curr_cost + Double::from_int(working_grid[next_point])
       // cost for A* algorithm
-      let a_start_cost = curr_point.l1_distance(target)
+      let a_star_cost = curr_point.l1_distance(target)
       // cost for direction suggestion
       let layer_cost = layer_cost(next_point, next_direction, info.via_penalty)
       let curr_direction = direction_grid[curr_point]
@@ -181,7 +180,7 @@ fn find_path(info : RouteInfo, net : Net) -> Array[Point] {
       }
       // total cost
       let next_cost = basic_cost +
-        Double::from_int(a_start_cost + layer_cost + bend_cost + via_cost)
+        Double::from_int(a_star_cost + layer_cost + bend_cost + via_cost)
       wavefronts.push((next_cost, next_point))
       working_grid[next_point] = -1
       direction_grid[next_point] = next_direction
@@ -205,10 +204,10 @@ fn layer_cost(point : Point, direction : Direction, penalty : Int) -> Int {
 ///|
 /// Enhance the cost grid inplace based on the congestion level
 fn enhance_cost_grid(grid : CostGrid, penalty : Int) -> Unit {
-  for k = 0; k < 2; k = k + 1 {
-    for i = 0; i < grid.col_size; i = i + 1 {
-      for j = 0; j < grid.row_size; j = j + 1 {
-        let curr = Point::new(k, i, j)
+  for l in 0..<2 {
+    for x in 0..<grid.col_size {
+      for y in 0..<grid.row_size {
+        let curr = Point::new(l, x, y)
         if grid[curr] == -1 {
           for direction in [X_POS, X_NEG, Y_POS, Y_NEG, L_POS, L_NEG] {
             let next = curr.next(direction)
