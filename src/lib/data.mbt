@@ -96,32 +96,42 @@ pub fn RouteInfo::from_file(
   grid_file : String,
   netlist_file : String
 ) -> RouteInfo {
-  let grid_file_content = @fs.read_file_to_string?(grid_file).unwrap()
-  let grid_input = Input::from_string(grid_file_content)
-  let col_size = grid_input.next_int().unwrap()
-  let row_size = grid_input.next_int().unwrap()
-  let bend_penalty = grid_input.next_int().unwrap()
-  let via_penalty = grid_input.next_int().unwrap()
+  // helper functions
+  let parse_int_opt = fn(s) { @strconv.parse_int?(s).to_option() }
+  let string_to_ints = fn(s) {
+    s
+    |> @string.split("\n")
+    |> Iter::map(fn(x) { @string.split(x, " ").filter_map(parse_int_opt) })
+    |> Iter::flatten
+    |> Iter::collect
+  }
+  // grid_file
+  let grid_input_numbers = @fs.read_file_to_string?(grid_file)
+    .map(string_to_ints)
+    .unwrap()
+  guard grid_input_numbers
+    is [col_size, row_size, bend_penalty, via_penalty, .. others] &&
+    col_size * row_size * 2 == others.length()
   let cost_grid = CostGrid::make(row_size, col_size, 0)
-  for k = 0; k < 2; k = k + 1 {
-    for i = 0; i < col_size; i = i + 1 {
-      for j = 0; j < row_size; j = j + 1 {
-        cost_grid[Point::new(k, i, j)] = grid_input.next_int().unwrap()
+  let mut idx = 0
+  for k in 0..<2 {
+    for i in 0..<col_size {
+      for j in 0..<row_size {
+        cost_grid[Point::new(k, i, j)] = others[idx]
+        idx += 1
       }
     }
   }
-  let netlist_file_content = @fs.read_file_to_string?(netlist_file).unwrap()
-  let netlist_input = Input::from_string(netlist_file_content)
-  let net_nums = netlist_input.next_int().unwrap()
+  // netlist_file
+  let netlist_input_numbers = @fs.read_file_to_string?(netlist_file)
+    .map(string_to_ints)
+    .unwrap()
+  guard netlist_input_numbers is [net_nums, .. others]
+  let mut others_mut = others
   let netlist = Map::new()
-  for i = 0; i < net_nums; i = i + 1 {
-    let net_id = netlist_input.next_int().unwrap()
-    let l1 = netlist_input.next_int().unwrap()
-    let x1 = netlist_input.next_int().unwrap()
-    let y1 = netlist_input.next_int().unwrap()
-    let l2 = netlist_input.next_int().unwrap()
-    let x2 = netlist_input.next_int().unwrap()
-    let y2 = netlist_input.next_int().unwrap()
+  for i in 0..<net_nums {
+    guard others_mut is [net_id, l1, x1, y1, l2, x2, y2, .. others]
+    others_mut = others
     let start = Point::new(l1 - 1, x1, y1)
     let target = Point::new(l2 - 1, x2, y2)
     // mark the start and end points unroutable
