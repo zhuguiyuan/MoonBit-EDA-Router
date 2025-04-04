@@ -3,5 +3,14 @@
   "import": [
     {"path": "zhuguiyuan/eda-router", "alias": "router"},
     "moonbitlang/x/sys"
-  ]
+  ],
+  "link": {
+    "native": {
+      "cc-flags": "-O3"
+    }
+  },
+  "targets": {
+    "main.mbt": ["js", "wasm", "wasm-gc"],
+    "main_native.mbt": ["native"]
+  }
 }
