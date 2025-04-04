@@ -1,7 +1,26 @@
 ///|
-/// The interface of an EDA router
-pub trait Router {
-  route(RouteInfo) -> RouteResult
+pub(all) type CongestionAwareRouter
+
+///|
+pub impl Router for CongestionAwareRouter with route(info : RouteInfo) -> RouteResult {
+  enhance_cost_grid(info.cost_grid, 3 * info.via_penalty)
+  let result = RouteResult(Map::new())
+  fn compare_length(id1 : Int, id2 : Int) -> Int {
+    let net1 = info.netlist[id1].unwrap()
+    let net2 = info.netlist[id2].unwrap()
+    net1.start.l1_distance(net1.target) - net2.start.l1_distance(net2.target)
+  }
+
+  let ordered_net_ids = info.netlist.keys().collect()
+  ordered_net_ids.sort_by(compare_length)
+  for net_id in ordered_net_ids {
+    let path = find_path(info, info.netlist[net_id].unwrap())
+    result._[net_id] = path
+    for p in path {
+      info.cost_grid[p] = -1
+    }
+  }
+  result
 }
 
 ///|
@@ -201,29 +220,4 @@ fn enhance_cost_grid(grid : CostGrid, penalty : Int) -> Unit {
       }
     }
   }
-}
-
-///|
-pub(all) type CongestionAwareRouter
-
-///|
-pub impl Router for CongestionAwareRouter with route(info : RouteInfo) -> RouteResult {
-  enhance_cost_grid(info.cost_grid, 3 * info.via_penalty)
-  let result = RouteResult(Map::new())
-  fn compare_length(id1 : Int, id2 : Int) -> Int {
-    let net1 = info.netlist[id1].unwrap()
-    let net2 = info.netlist[id2].unwrap()
-    net1.start.l1_distance(net1.target) - net2.start.l1_distance(net2.target)
-  }
-
-  let ordered_net_ids = info.netlist.keys().collect()
-  ordered_net_ids.sort_by(compare_length)
-  for net_id in ordered_net_ids {
-    let path = find_path(info, info.netlist[net_id].unwrap())
-    result._[net_id] = path
-    for p in path {
-      info.cost_grid[p] = -1
-    }
-  }
-  result
 }
