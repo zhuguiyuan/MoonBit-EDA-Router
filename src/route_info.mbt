@@ -8,7 +8,11 @@ pub fn RouteInfo::from_file(
   let string_to_ints = fn(s) {
     s
     |> @string.split("\n")
-    |> Iter::map(fn(x) { @string.split(x, " ").filter_map(parse_int_opt) })
+    |> Iter::map(fn(x) {
+      @string.split(x.to_string(), " ").filter_map(fn(y) {
+        parse_int_opt(y.to_string())
+      })
+    })
     |> Iter::flatten
     |> Iter::collect
   }
